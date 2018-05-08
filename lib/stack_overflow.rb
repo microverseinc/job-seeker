@@ -1,7 +1,7 @@
-class WeWorkRemotely
+class StackOverflow
   def get_jobs
     open(url) do |rss|
-      feed = RSS::Parser.parse(rss)
+      feed = RSS::Parser.parse(rss, false)
       filtered_items = feed.items.select do |item|
         item.pubDate.day == DateTime.now.day
       end
@@ -9,8 +9,8 @@ class WeWorkRemotely
       filtered_items.map do |item|
         {
           description: item.description,
-          source: "We Work Remotely",
-          title: item.title,
+          source: "Stack Overflow",
+          title: item.title.strip,
           publication_date: item.pubDate.to_s,
           url: item.link
         }
@@ -18,9 +18,7 @@ class WeWorkRemotely
     end
   end
 
-  private
-
   def url
-    "https://weworkremotely.com/categories/remote-programming-jobs.rss"
+    "https://stackoverflow.com/jobs/feed"
   end
 end

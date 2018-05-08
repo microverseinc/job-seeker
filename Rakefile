@@ -2,24 +2,39 @@ require 'typhoeus'
 require 'pry'
 require 'json'
 require 'rss'
+require 'mail'
+require 'dotenv'
 
-require_relative 'lib/we_work_remotely'
-require_relative 'lib/remote_ok'
+Dotenv.load
 
-task :post_jobs do
-  slack_webhook = "fake_url"
+require_relative 'lib/jobs_collector'
+require_relative 'config/mail'
 
-  we_work_remotely = WeWorkRemotely.new.get_jobs
-  remote_ok = RemoteOk.new.get_jobs
+task :send_jobs do
+  html = ''
+  jobs = JobsCollector.new.get_jobs
 
-  text = ""
+  jobs.each_with_index do |item, index|
+    html << "<h3>#{item[:source]}</h3>" if index == 0 || jobs[index - 1][:source] != item[:source]
 
-  [we_work_remotely, remote_ok].flatten.each do |item|
-    text << "*Source:* #{item[:source]}\n*Title:* #{item[:title]}\n*Publication Date:* #{item[:publication_date]}\n*Link:* <#{item[:url]}>\n\n"
+    html << "
+      <p><b>Title:</b> #{item[:title]}</p>
+      <p><b>Publication Date:</b> #{item[:publication_date]}</p>
+      <p><b>Link:</b> #{item[:url]}</p>
+      <br/><br/>
+    "
   end
 
-  request = Typhoeus::Request.new(slack_webhook, method: :post, body: { text: text }.to_json)
-  request.run
+  mail = Mail.new do
+    from  ENV['MAIL_USERNAME']
+    to  'maciejnowak@microverse.org'
+    subject "Job postings - #{DateTime.now.strftime("%d-%m-%Y")}"
+    html_part do
+      body  html
+    end
+  end
+
+  mail.deliver!
 end
 
 task :we_work_remotely do
