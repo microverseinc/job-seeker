@@ -3,7 +3,7 @@ class StackOverflow
     open(url) do |rss|
       feed = RSS::Parser.parse(rss, false)
       filtered_items = feed.items.select do |item|
-        item.pubDate.day == DateTime.now.day
+        item.pubDate.day == DateTime.now.day && remote?(item)
       end
 
       filtered_items.map do |item|
@@ -16,6 +16,10 @@ class StackOverflow
         }
       end
     end
+  end
+
+  def remote?(item)
+    item.categories.map(&:content).find { |c| c == "remote" }
   end
 
   def url

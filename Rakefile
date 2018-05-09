@@ -27,7 +27,7 @@ task :send_jobs do
 
   mail = Mail.new do
     from  ENV['MAIL_USERNAME']
-    to  'maciejnowak@microverse.org'
+    to  ['maciejnowak@microverse.org', 'arielcamus@microverse.org']
     subject "Job postings - #{DateTime.now.strftime("%d-%m-%Y")}"
     html_part do
       body  html
@@ -35,12 +35,4 @@ task :send_jobs do
   end
 
   mail.deliver!
-end
-
-task :we_work_remotely do
-  puts WeWorkRemotely.new.get_jobs
-end
-
-task :remote_ok do
-  puts RemoteOk.new.get_jobs
 end
