@@ -27,7 +27,7 @@ task :send_jobs do
 
   mail = Mail.new do
     from  ENV['MAIL_USERNAME']
-    to  ['maciejnowak@microverse.org', 'arielcamus@microverse.org']
+    to  ['jobseekers@microverse.org']
     subject "Job postings - #{DateTime.now.strftime("%d-%m-%Y")}"
     html_part do
       body  html
