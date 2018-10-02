@@ -18,17 +18,16 @@ task :send_jobs do
     html << "<h3>#{item[:source]}</h3>" if index == 0 || jobs[index - 1][:source] != item[:source]
 
     html << "
-      <p><b>Title:</b> #{item[:title]}</p>
-      <p><b>Publication Date:</b> #{item[:publication_date]}</p>
-      <p><b>Link:</b> #{item[:url]}</p>
-      <br/><br/>
+      <p><b>#{item[:title]}</b><br />
+      #{item[:url]}</p>
+      <br/>
     "
   end
 
   mail = Mail.new do
     from  ENV['MAIL_USERNAME']
     to  ['jobseekers@microverse.org']
-    subject "Job postings - #{DateTime.now.strftime("%d-%m-%Y")}"
+    subject "New remote jobs (#{DateTime.now.strftime("%d-%m-%Y")})"
     html_part do
       body  html
     end
